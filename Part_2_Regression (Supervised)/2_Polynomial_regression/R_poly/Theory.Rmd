@@ -1,6 +1,10 @@
 ---
 title: "Regresión polinómica en R"
-output: html_notebook
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
 ---
 
 La regresión *lineal* polinómica es una caso especial de regresión lineal simple. Su expresión matemática es la siguiente:
@@ -43,12 +47,13 @@ data$X5 = data$X^5
 ```
 
 ## Regresión lineal simple
+
+Comenzamos con la regresión lineal simple para poder hacer una comparativa con la regresión lineal polinómica. Así veremos si hay realmente un mejor ajuste, y como influye este ajuste a las métricas.
 ```{r}
 lin_reg <- lm(formula = y ~ X, data = data)
-poly_reg <- lm(formula = y ~ ., data = data)
 ```
 
-## Visualización de los resultados
+### Visualización de los resultados
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 ggplot() + 
@@ -61,6 +66,21 @@ ggplot() +
   ylab("y")
 ```
 
+### Métricas
+
+```{r}
+summary(lin_reg)
+```
+
+
+## Regresión lineal polinómica
+
+```{r}
+poly_reg <- lm(formula = y ~ ., data = data)
+```
+
+### Visualización de los resultados
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
 ggplot() + 
   geom_point(aes(x = data$X , y = data$y ), 
@@ -70,5 +90,11 @@ ggplot() +
   ggtitle("Regresión polinómica") +
   xlab("X") +
   ylab("y")
+```
+
+### Métricas
+
+```{r}
+summary(poly_reg)
 ```
 

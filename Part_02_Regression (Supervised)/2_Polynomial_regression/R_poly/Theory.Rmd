@@ -1,0 +1,100 @@
+---
+title: "Regresión polinómica en R"
+output:
+  html_document:
+    df_print: paged
+  html_notebook: default
+  pdf_document: default
+---
+
+La regresión *lineal* polinómica es una caso especial de regresión lineal simple. Su expresión matemática es la siguiente:
+
+$$
+y = b_{0} + b_{1}x_{1} + b_{2}x_{1}^{2} + ... + b_{n}x_{1}^{n}
+$$
+
+El hecho de que se siga llamando *lineal* cuando las variables son claramente no-lineales es debido a que no nos fijamos en dichas variables sino en los coeficientes que acompañan a dichas variables. Estos coeficientes son las incognitas que queremos averiguar y estos son lineales respecto a la *salida* o variable *y*.
+
+Como hemos expresado, la relación con las observaciones son no-lineales, lo que hace este método más apropiado para tratar problemas con variables no-lineales.
+
+## Bibliotecas
+
+```{r message=FALSE, warning=FALSE, paged.print=FALSE}
+# Instalamos bibliotecas
+#install.packages('caTools')
+#install.packages('ggplot2')
+library(ggplot2)
+library(caTools)
+```
+ 
+## Cargamos la información generada con Python
+
+La información se ha creado mediante Python usando la siguiente relación.
+
+$$
+X_i = 1.387 \cdot N(\sigma, \mu) \\
+\text{Residuos}_i = 2.4 \cdot N(\sigma, \mu) \\
+y_i =   \text{Residuos} + 1.13 \cdot e^{X_{i}}
+$$
+
+```{r}
+data = read.csv('data.csv')
+
+# Polynomial features
+data$X2 = data$X^2
+data$X4 = data$X^4
+data$X5 = data$X^5
+```
+
+## Regresión lineal simple
+
+Comenzamos con la regresión lineal simple para poder hacer una comparativa con la regresión lineal polinómica. Así veremos si hay realmente un mejor ajuste, y como influye este ajuste a las métricas.
+```{r}
+lin_reg <- lm(formula = y ~ X, data = data)
+```
+
+### Visualización de los resultados
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+ggplot() + 
+  geom_point(aes(x = data$X , y = data$y ), 
+             colour='#2689d9') +
+  geom_line(aes(x = data$X, y = predict(lin_reg, newdata = data)), 
+            colour = '#d9c026') +
+  ggtitle("Regresión lineal simple") +
+  xlab("X") +
+  ylab("y")
+```
+
+### Métricas
+
+```{r}
+summary(lin_reg)
+```
+
+
+## Regresión lineal polinómica
+
+```{r}
+poly_reg <- lm(formula = y ~ ., data = data)
+```
+
+### Visualización de los resultados
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=FALSE}
+ggplot() + 
+  geom_point(aes(x = data$X , y = data$y ), 
+             colour='#2689d9') +
+  geom_line(aes(x = data$X, y = predict(poly_reg, newdata = data)), 
+            colour = 'coral') +
+  ggtitle("Regresión polinómica") +
+  xlab("X") +
+  ylab("y")
+```
+
+### Métricas
+
+```{r}
+summary(poly_reg)
+```
+
